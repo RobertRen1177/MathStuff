@@ -6,7 +6,7 @@ pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 800, 600
-TARGET_POINT = np.array([WIDTH // 1.3, HEIGHT // 2])
+TARGET_POINT = np.array([WIDTH // 1.3, HEIGHT // 2.5])
 R_INITIAL = 600.0
 DESIRED_ANGLE = 0  # 45 degrees
 BACKGROUND_COLOR = (255, 255, 255)
