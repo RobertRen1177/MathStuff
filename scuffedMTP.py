@@ -16,7 +16,6 @@ CARROT_COLOR = (0, 255, 0)
 AXIS_COLOR = (0, 0, 0)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Robot Carrot Point Simulation")
 
 # Initial positions
 current_position = np.array([WIDTH // 4, HEIGHT // 4]) 
@@ -24,6 +23,15 @@ carrot_point = TARGET_POINT - R_INITIAL * np.array([np.cos(DESIRED_ANGLE), np.si
 D_INITIAL = np.linalg.norm(current_position - carrot_point) + np.linalg.norm(carrot_point - TARGET_POINT)
 dragging = False  
 
+def angle_between_vectors(vector_a, vector_b):
+    dot_product = np.dot(vector_a, vector_b)
+    
+    magnitude_a = np.linalg.norm(vector_a)
+    magnitude_b = np.linalg.norm(vector_b)
+
+    angle = np.arctan2(np.sqrt(np.clip(magnitude_a**2 * magnitude_b**2 - dot_product**2, 0, None)), dot_product)
+
+    return angle
 # Function to draw axes
 def draw_axes():
     # Draw horizontal line
@@ -37,6 +45,8 @@ def draw_axes():
 running = True
 prev_d = D_INITIAL
 r = R_INITIAL
+
+withinAngleRange = False
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -52,10 +62,19 @@ while running:
             d_new = np.linalg.norm(carrot_point - current_position) + np.linalg.norm(TARGET_POINT - carrot_point)
             if(d_new > prev_d):
                 continue
-            r -= (1-(d_new / prev_d)) * r
-            print(d_new, prev_d, d_new / prev_d)
+            angle = angle_between_vectors(TARGET_POINT - carrot_point, current_position - carrot_point)
+            if(angle >= math.pi / 2):
+                r *= math.pow(d_new / prev_d, 1)
+                withinAngleRange = True
+            else:
+                r *= math.pow(d_new / prev_d, math.sin(angle))
+            if withinAngleRange:
+                r *= math.pow(d_new / prev_d, 1)
+                
+            print(d_new, prev_d, d_new / prev_d, angle)
             prev_d = d_new
             carrot_point = TARGET_POINT - r * np.array([np.cos(DESIRED_ANGLE), np.sin(DESIRED_ANGLE)])
+    
     
     screen.fill(BACKGROUND_COLOR)
     draw_axes()  

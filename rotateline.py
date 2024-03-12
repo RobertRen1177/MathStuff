@@ -28,5 +28,5 @@ def rotate_line(m, b, x0, y0, theta):
 
 m, b = 1, 2  
 x0, y0 = 3, 5
-theta = 45 
+theta = -30
 print(rotate_line(m, b, x0, y0, theta))
