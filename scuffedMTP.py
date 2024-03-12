@@ -52,7 +52,7 @@ while running:
             d_new = np.linalg.norm(carrot_point - current_position) + np.linalg.norm(TARGET_POINT - carrot_point)
             if(d_new > prev_d):
                 continue
-            r *= math.pow(d_new / prev_d, 1/1.3)
+            r -= (1-(d_new / prev_d)) * r
             print(d_new, prev_d, d_new / prev_d)
             prev_d = d_new
             carrot_point = TARGET_POINT - r * np.array([np.cos(DESIRED_ANGLE), np.sin(DESIRED_ANGLE)])
