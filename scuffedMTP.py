@@ -6,8 +6,8 @@ pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 800, 600
-TARGET_POINT = np.array([WIDTH // 1.3, HEIGHT // 2.5])
-R_INITIAL = 600.0
+TARGET_POINT = np.array([WIDTH // 1.3, HEIGHT // 2.3])
+R_INITIAL = 500.0
 DESIRED_ANGLE = 0  # 45 degrees
 BACKGROUND_COLOR = (255, 255, 255)
 TARGET_COLOR = (255, 0, 0)
@@ -18,7 +18,7 @@ AXIS_COLOR = (0, 0, 0)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # Initial positions
-current_position = np.array([WIDTH // 4, HEIGHT // 4]) 
+current_position = np.array([WIDTH // 2, HEIGHT // 4]) 
 carrot_point = TARGET_POINT - R_INITIAL * np.array([np.cos(DESIRED_ANGLE), np.sin(DESIRED_ANGLE)])
 D_INITIAL = np.linalg.norm(current_position - carrot_point) + np.linalg.norm(carrot_point - TARGET_POINT)
 dragging = False  
@@ -47,6 +47,7 @@ prev_d = D_INITIAL
 r = R_INITIAL
 
 withinAngleRange = False
+dampeningConstant = 0.7
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -67,7 +68,7 @@ while running:
                 r *= math.pow(d_new / prev_d, 1)
                 withinAngleRange = True
             else:
-                r *= math.pow(d_new / prev_d, math.sin(angle))
+                r *= math.pow(d_new / prev_d, math.pow(math.sin(angle), dampeningConstant))
             if withinAngleRange:
                 r *= math.pow(d_new / prev_d, 1)
                 
