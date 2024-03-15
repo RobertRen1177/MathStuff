@@ -7,7 +7,7 @@ pygame.init()
 # Constants
 WIDTH, HEIGHT = 800, 600
 TARGET_POINT = np.array([WIDTH // 1.3, HEIGHT // 2.3])
-R_INITIAL = 500.0
+R_INITIAL = 600.0
 DESIRED_ANGLE = 0  # 45 degrees
 BACKGROUND_COLOR = (255, 255, 255)
 TARGET_COLOR = (255, 0, 0)
@@ -45,9 +45,13 @@ def draw_axes():
 running = True
 prev_d = D_INITIAL
 r = R_INITIAL
-
+dampener = 0.7
 withinAngleRange = False
-dampeningConstant = 0.7
+def trigFunc(angle):
+    if(angle >= math.pi / 2):
+        return 1
+    return math.pow(math.sin(angle), 1.3)
+    
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -64,18 +68,10 @@ while running:
             if(d_new > prev_d):
                 continue
             angle = angle_between_vectors(TARGET_POINT - carrot_point, current_position - carrot_point)
-            if(angle >= math.pi / 2):
-                r *= math.pow(d_new / prev_d, 1)
-                withinAngleRange = True
-            else:
-                r *= math.pow(d_new / prev_d, math.pow(math.sin(angle), dampeningConstant))
-            if withinAngleRange:
-                r *= math.pow(d_new / prev_d, 1)
-                
-            print(d_new, prev_d, d_new / prev_d, angle)
+            r = R_INITIAL *  math.pow(d_new / D_INITIAL, trigFunc(angle))
+            
             prev_d = d_new
             carrot_point = TARGET_POINT - r * np.array([np.cos(DESIRED_ANGLE), np.sin(DESIRED_ANGLE)])
-    
     
     screen.fill(BACKGROUND_COLOR)
     draw_axes()  
