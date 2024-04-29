@@ -2,12 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Time parameters
-t = np.linspace(0, 30, 500)
+t = np.linspace(0, 1, 500)
 
-acc_time = 8 # Time for acceleration
-const_time = 10  # Time for constant velocity
-dec_time = 8  # Time for deceleration
-T = acc_time + const_time + dec_time
+acc_time = 0.2 # Time for acceleration
+dec_time = 0.2  # Time for deceleration
+const_time = 1 - (acc_time + dec_time)  # Time for constant velocity
+
+T = 1
 
 s_curve = np.piecewise(t, 
                        [t < acc_time, 
@@ -19,9 +20,9 @@ s_curve = np.piecewise(t,
 
 plt.figure(figsize=(10, 6))
 plt.plot(t, s_curve, label='Skibidi')
-plt.title('I have to be clean now')
-plt.xlabel('Time (s)')
-plt.ylabel('Position (normalized)')
+plt.title('Sin MP')
+plt.xlabel('t val')
+plt.ylabel('voltage (normalized)')
 plt.grid(True)
 plt.legend()
 plt.show()

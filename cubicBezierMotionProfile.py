@@ -20,12 +20,13 @@ def curvature(t, P):
     return numerator / max(denominator, 1e-6) 
 
 
-P = [np.array([0, 0]), np.array([1.8, -1.55]), np.array([3.5, 5.42]), np.array([6.43, 1.28])]  # Control points
+P = [np.array([-2.5, -4.14]), np.array([-3.8, 24.4]), np.array([33.6, 23.3]), np.array([33.8, -3.6])]  # Control points
 curve_length = bezierlength.bezier_arclength(P[0], P[1], P[2], P[3])
-deltaDistance = 0.1
+deltaDistance = curve_length / 200
 totalDistanceTravelled = 0
-a_max = 2.0  # Maximum acceleration
-v_max = 5.0  # Maximum velocity
+a_max = 33 # Maximum acceleration
+deaccel_max = 10
+v_max = 50  # Maximum velocity
 t = 0
 
 v_forward = []
@@ -40,15 +41,12 @@ while(t <= 1):
     
     k = curvature(t, P)
     v_curvature = math.sqrt(0.8 * 9.8 * 1.0/k) #sqrt(urg) to not slip around corners
-    v_max_accel = math.sqrt(v * v + 2 * a_max * deltaDistance) #cant accelerate too fast
-    v_max_deaccel = math.sqrt(2 * a_max * (curve_length - totalDistanceTravelled))#deaccleration phase, have to be able to slow down to 0 before the end at a maximum acceleration
-    v = min(v_max, v_curvature, v_max_accel, v_max_deaccel) #min to find the speed
+    v_max_accel = math.sqrt(v * v + 2 *a_max * deltaDistance) #cant accelerate too fast
+    v_max_deaccel = math.sqrt(2 * deaccel_max * (curve_length - totalDistanceTravelled))#deaccleration phase, have to be able to slow down to 0 before the end at a maximum acceleration
+    v = max(min(v_max, v_curvature, v_max_accel, v_max_deaccel), math.sqrt(max(v * v - 2 * deaccel_max * deltaDistance, 0))) #min to find the speed
     v_forward.append(v)
     totalDistanceTravelled += deltaDistance #update distance
     
-
-
-t_values = np.linspace(0, 0.5, int(curve_length/deltaDistance))
 plt.figure(figsize=[12, 6])
 plt.plot(v_forward)
 plt.legend()

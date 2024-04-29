@@ -48,9 +48,9 @@ r = R_INITIAL
 dampener = 0.7
 withinAngleRange = False
 def trigFunc(angle):
-    if(angle >= math.pi / 2):
+    if(angle > math.pi/2):
         return 1
-    return math.pow(math.sin(angle), 1.3)
+    return math.pow(2 / math.pi * angle, 0.61)
     
 while running:
     for event in pygame.event.get():
@@ -69,7 +69,7 @@ while running:
                 continue
             angle = angle_between_vectors(TARGET_POINT - carrot_point, current_position - carrot_point)
             r = R_INITIAL *  math.pow(d_new / D_INITIAL, trigFunc(angle))
-            
+            print(d_new / D_INITIAL, trigFunc(angle), math.pow(d_new / D_INITIAL, trigFunc(angle)))
             prev_d = d_new
             carrot_point = TARGET_POINT - r * np.array([np.cos(DESIRED_ANGLE), np.sin(DESIRED_ANGLE)])
     

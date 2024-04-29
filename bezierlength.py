@@ -45,35 +45,32 @@ def integrand(t, P0, P1, P2, P3):
     derivative = derivative_cubic_bezier(t, P0, P1, P2, P3)
     return np.sqrt(np.sum(derivative**2))
 
-def bezier_arclength(P0, P1, P2, P3):
+def bezier_arclength(P0, P1, P2, P3, t1=0, t2=1):
     begin = time.time()
     n = len(coefficent_24)
     length = 0
     for i in range(n):
-        t = 0.5 * (coefficent_24[i][1] + 1)
-        length += coefficent_24[i][0] * integrand(t, P0, P1, P2, P3)
-    print((time.time() - begin) * 1000)
-    return 0.5 * length
-
+        t = 0.5 * (coefficent_24[i][1] + 1) * (t2 - t1) + t1
+        weight = coefficent_24[i][0] * (t2 - t1) / 2
+        length += weight * integrand(t, P0, P1, P2, P3)
+    return length
 
 def distance(P0, P1):
     return math.sqrt((P0[0] - P1[0]) * (P0[0] - P1[0]) +  (P0[1] - P1[1]) * (P0[1] - P1[1]))
 
-def bezier_real_arc_len(P0, P1, P2, P3):
+def bezier_real_arc_len(P0, P1, P2, P3, t1 = 0, t2 = 1):
     begin = time.time()
-    counter = 0
-    prevPoint = P0
+    counter = t1
+    prevPoint = cubic_bezier_curve(counter, P0, P1, P2, P3)
     total_distance = 0
-    while(counter < 1):
-        counter += 1/60
+    while(counter < t2):
+        counter += 1/100
         current_point = cubic_bezier_curve(counter, P0, P1, P2, P3)
         total_distance += distance(prevPoint, current_point)
         prevPoint = current_point
-    print((time.time() - begin) * 1000)
     return total_distance
         
 
-arc_length = bezier_arclength(P0, P1, P2, P3)
-real_arc_length = bezier_real_arc_len(P0, P1, P2, P3)
-print(arc_length)
-print(real_arc_length)
+arc_length = bezier_arclength(P0, P1, P2, P3, 0.5, 0.7)
+real_arc_length = bezier_real_arc_len(P0, P1, P2, P3, 0.5, 0.7)
+print(arc_length, real_arc_length)
